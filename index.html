@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            Vue.component('app', {
+                data: function () {
+                    return {
+                        editToDo: null,
+                        messages: '',
+                        state: 0,
+                        id: 0,
+                        name: "",
+                        content: "",
+                        todo: [],
+                        columns: ["todo", "doing", "done"],
+                        showModal: false,
+                        popupActivo: false,
+                    }
+                },
+
+                methods: {
+                    UpElement: function (item) {
+                        item.state++;
+                    },
+                    DownElement: function (item) {
+                        item.state--;
+                    },
+                    removeElement: function (key) {
+                        this.todo.splice(key, 1);
+                    },
+                    callMethod: function (event) {
+                        this.todo.push({
+                            messages: this.messages,
+                            state: this.state,
+                            id: this.id++,
+                            content: null
+                        })
+                    },
+                    callPopup: function (editToDo) {
+                        
+                        this.todo[editToDo].messages = this.messages;
+                        this.todo[editToDo].content = this.content;
+                        //reset values
+                        this.messages = "";
+                        this.content = "";
+                    },
+                },
+
+                template: `
+                    <div class="hello">
+                        <form v-on:submit.prevent="callMethod">
+                            <label for="new-todo">Ajouter une card</label>
+                            <input v-model="messages" id="new-todo">
+                            <button>Envoyer</button>
+                        </form>
+
+                        <div class="allcolonnes" id="resultMessage">
+                            <div class="colonne">
+                                <h2 class="title">todo</h2>
+                                <div class="border-bottom"></div>
+                                <ul v-if="state === 0">
+                                    <li v-if="item.state === 0" v-for="(item, key) in todo" :key="item.id">
+                                        <span>Name: {{item.messages}}</span></br>
+                                        <span>Contenu: {{item.content}}</span></br>
+                                        <button v-on:click="UpElement(item)">UP</button>
+                                        <button v-on:click="removeElement(key)">remove</button>
+                                        
+                                        
+                                        <button @click="editToDo = key">
+                                            <button>Edit</button>
+                                        </button>
+                                    </li>
+                                </ul>
+                                <div v-if="editToDo !== null" class="overlay">
+                                    <div class="popup">
+                                    <button class="close" @click="editToDo=null">&times;</button>
+                                    <form v-on:submit.prevent="callPopup(editToDo)">
+                                        <div>
+                                        <p>Nom: </p>
+                                        <input v-model="messages" class="new-todo">
+                                        </div>
+                                        <div>
+                                        <p>Contenu: </p>
+                                        <input v-model="content" class="new-todo">
+                                        </div>
+                                        <button>Sauvegarder</button>
+                                    </form>
+                                    </div>
+                                </div>
+                                <div class="endcolonne"></div>
+                            </div>
+
+
+                            <div class="colonne">
+                                <h2 class="title">doing</h2>
+                                <div class="border-bottom"></div>
+                                <ul v-if="state === 0">
+                                    <li v-if="item.state === 1" v-for="(item, key) in todo" :key="item.id">
+                                        <span>Name: {{item.messages}}</span></br>
+                                        <span>Contenu: {{item.content}}</span></br>
+                                        <button v-on:click="DownElement(item)">Down</button>
+                                        <button v-on:click="UpElement(item)">UP</button>
+                                        <button v-on:click="removeElement(key)">remove</button>
+                                        
+                                        
+                                        <button @click="editToDo = key">
+                                            <button>Edit</button>
+                                        </button>
+                                    </li>
+                                </ul>
+                                <div v-if="editToDo !== null" class="overlay">
+                                    <div class="popup">
+                                    <button class="close" @click="editToDo=null">&times;</button>
+                                    <form v-on:submit.prevent="callPopup(editToDo)">
+                                        <div>
+                                        <p>Nom: </p>
+                                        <input v-model="messages" class="new-todo">
+                                        </div>
+                                        <div>
+                                        <p>Contenu: </p>
+                                        <input v-model="content" class="new-todo">
+                                        </div>
+                                        <button>Sauvegarder</button>
+                                    </form>
+                                    </div>
+                                </div>
+                                <div class="endcolonne"></div>
+                            </div>
+
+                            <div class="colonne">
+                                <h2 class="title">done</h2>
+                                <div class="border-bottom"></div>
+                                <ul v-if="state === 0">
+                                    <li v-if="item.state === 2" v-for="(item, key) in todo" :key="item.id">
+                                        <span>Name: {{item.messages}}</span></br>
+                                        <span>Contenu: {{item.content}}</span></br>
+                                        <button v-on:click="DownElement(item)">Down</button>
+                                        <button v-on:click="removeElement(key)">remove</button>
+                                        
+                                        
+                                        <button @click="editToDo = key">
+                                            <button>Edit</button>
+                                        </button>
+                                    </li>
+                                </ul>
+                                <div v-if="editToDo !== null" class="overlay">
+                                    <div class="popup">
+                                    <button class="close" @click="editToDo=null">&times;</button>
+                                    <form v-on:submit.prevent="callPopup(editToDo)">
+                                        <div>
+                                        <p>Nom: </p>
+                                        <input v-model="messages" class="new-todo">
+                                        </div>
+                                        <div>
+                                        <p>Contenu: </p>
+                                        <input v-model="content" class="new-todo">
+                                        </div>
+                                        <button>Sauvegarder</button>
+                                    </form>
+                                    </div>
+                                </div>
+                                <div class="endcolonne"></div>
+                            </div>
+                        </div>
+                    </div>
+                `,
+            })
+
+            new Vue({ 
+                el: '#app' ,
+            })
+        });
+    </script>
+</head>
+<body>
+    <div id="app">
+        <app></app>
+    </div>
+    
+    
+</body>
+</html>
